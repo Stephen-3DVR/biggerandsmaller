@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adjectives</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+         body {
+            font-family: 'Poppins', Arial, sans-serif;
+            text-align: center;
+            background-color: #f5f5f5;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        h1 {
+            font-weight: 600;
+            font-size: 2.5em;
+            margin-bottom: 30px;
+        }
+        button {
+            font-size: 1.2em;
+            padding: 10px 20px;
+            margin: 10px;
+            background-color: #4CAF50;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        /* Add styles for the header */
+        header {
+            width: 100%;
+            background-color: #333;
+            padding: 20px 0;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+        }
+        nav {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            width: 80%;
+            margin: 0 auto;
+        }
+        nav a {
+            color: #fff;
+            text-decoration: none;
+            font-size: 1.2em;
+            margin: 0 10px;
+        }
+        nav a:hover {
+            color: #4CAF50;
+        }
+        #adjectives-container,
+        #small-adjectives-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding: 10px;
+            max-width: 400px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 5px;
+        }
+
+        .adjective {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 15px;
+            background-color: #4caf50;
+            color: #ffffff;
+            font-size: 18px;
+            border-radius: 5px;
+            white-space: nowrap;
+        }
+
+        .position {
+            margin-right: 10px;
+        }
+
+        .lists-container {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+    </style>
+</head>
+<body>
+        <header>
+        <nav>
+            <a href="/">Rank The Adjectives</a>
+            <a href="linelist.html">The Sizes, Ranked</a>
+            <a href="about.html">About This Site</a>
+        </nav>
+    </header>
+    <h1>Adjectives</h1>
+    <div class="lists-container">
+        <div id="adjectives-container">
+            <!-- Adjectives will be displayed here -->
+        </div>
+        <div id="small-adjectives-container">
+            <!-- Small adjectives will be displayed here -->
+        </div>
+    </div>
+    <script>
+        function updateAdjectives() {
+            $.ajax({
+                url: '/get_all_adjectives',
+                type: 'GET',
+                dataType: 'json',
+                success: function(data) {
+                    let adjectives = data.adjectives;
+                    let adjectivesHTML = adjectives.map(function(adj, index) {
+                        return '<div class="adjective"><span class="position">' + (index + 1) + '.</span>' + adj + '</div>';
+                    }).join('');
+                    $('#adjectives-container').html(adjectivesHTML);
+                }
+            });
+
+            $.ajax({
+                url: '/get_all_small_adjectives',
+                type: 'GET',
+                dataType: 'json',
+                success: function(data) {
+                    let smallAdjectives = data.adjectives;
+                    let smallAdjectivesHTML = smallAdjectives.map(function(adj, index) {
+                        return '<div class="adjective"><span class="position">' + (index + 1) + '.</span>' + adj + '</div>';
+                    }).join('');
+                    $('#small-adjectives-container').html(smallAdjectivesHTML);
+                }
+            });
+        }
+
+        // Update adjectives every 5 seconds
+        setInterval(updateAdjectives, 5000);
+
+        // Update adjectives on page load
+        updateAdjectives();
+    </script>
+</body>
+</html>

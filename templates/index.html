@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Size Adjectives</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', Arial, sans-serif;
+            text-align: center;
+            background-color: #f5f5f5;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        h1 {
+            font-weight: 600;
+            font-size: 2.5em;
+            margin-bottom: 30px;
+        }
+        button {
+            font-size: 1.2em;
+            padding: 10px 20px;
+            margin: 10px;
+            background-color: #4CAF50;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        /* Add styles for the header */
+        header {
+            width: 100%;
+            background-color: #333;
+            padding: 20px 0;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+        }
+        nav {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            width: 80%;
+            margin: 0 auto;
+        }
+        nav a {
+            color: #fff;
+            text-decoration: none;
+            font-size: 1.2em;
+            margin: 0 10px;
+        }
+        nav a:hover {
+            color: #4CAF50;
+        }
+    </style>
+</head>
+<body>
+    <!-- Add the header with links -->
+    <header>
+        <nav>
+            <a href="/">Rank The Adjectives</a>
+            <a href="linelist.html">The Sizes, Ranked</a>
+            <a href="about.html">About This Site</a>
+        </nav>
+    </header>
+
+    <h1>Which adjective is larger?</h1>
+    <button id="adj1">Adjective 1</button>
+    <button id="adj2">Adjective 2</button>
+
+	<h1>Which adjective is smaller?</h1>
+	<button id="small_adj1">Adjective 1</button>
+	<button id="small_adj2">Adjective 2</button>
+
+    <script>
+        let currentAdjectives = {};
+		let currentSmallAdjectives = {};
+		
+        async function fetchAdjectives() {
+            const response = await fetch('/get_adjectives');
+            const data = await response.json();
+            currentAdjectives = data;
+            document.getElementById('adj1').innerText = data.adj1;
+            document.getElementById('adj2').innerText = data.adj2;
+        }
+		
+		async function fetchSmallAdjectives() {
+			const response = await fetch('/get_small_adjectives');
+			const data = await response.json();
+			currentSmallAdjectives = data;
+			document.getElementById('small_adj1').innerText = data.adj1;
+			document.getElementById('small_adj2').innerText = data.adj2;
+		}
+
+        async function submitChoice(selected) {
+            const data = {
+                selected: selected,
+                adj1: currentAdjectives.adj1,
+                adj2: currentAdjectives.adj2
+            };
+            const response = await fetch('/submit_choice', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+            const result = await response.json();
+            if (result.status === 'success') {
+                fetchAdjectives();
+            }
+        }
+		async function submitSmallChoice(selected) {
+			const data = {
+				selected: selected,
+				adj1: currentSmallAdjectives.adj1,
+				adj2: currentSmallAdjectives.adj2
+			};
+			const response = await fetch('/submit_small_choice', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify(data)
+			});
+			const result = await response.json();
+				if (result.status === 'success') {
+				fetchSmallAdjectives();
+			}
+		}
+        document.getElementById('adj1').addEventListener('click', () => submitChoice(currentAdjectives.adj1));
+        document.getElementById('adj2').addEventListener('click', () => submitChoice(currentAdjectives.adj2));
+		
+		document.getElementById('small_adj1').addEventListener('click', () => submitSmallChoice(currentSmallAdjectives.adj1));
+		document.getElementById('small_adj2').addEventListener('click', () => submitSmallChoice(currentSmallAdjectives.adj2));
+
+        fetchAdjectives();
+		fetchSmallAdjectives();
+    </script>
+</body>
+</html>
